@@ -1,0 +1,6 @@
+{
+    "scripts": {
+        "update-requirements": "pip freeze > requirements.txt",
+        "start": "py run.py"
+    }
+}
