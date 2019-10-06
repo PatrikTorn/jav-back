@@ -22,7 +22,7 @@ class User(db.Model):
         return {
             'id': self.id,
             'username': self.username,
-            'created_at': self.created_at,
+            'created_at': self.created_at.isoformat(),
             'measurements': measurement.find_metas(self.id)
         }
 
@@ -43,15 +43,18 @@ def get():
 
 
 def create(username, password):
+    token = secrets.token_hex(20)
     user = User(
         username=username,
         password=bcrypt.generate_password_hash(password).decode('utf-8'),
-        token=secrets.token_hex(20)
+        token=token
     )
     try:
         db.session.add(user)
         db.session.commit()
-        return user.get_json()
+        user_json = user.get_json()
+        user_json['token'] = token
+        return user_json
     except:
         return None
 

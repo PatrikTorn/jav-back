@@ -40,6 +40,7 @@ def login():
 def authenticate():
     body = request.get_json()
     result = user.find_by_token(token=body['token'])
+    result['token'] = body['token']
     if result:
         return jsonify(result)
     return "Wrong token", 400
@@ -77,7 +78,8 @@ def get_measurements():
 
 @app.route('/measurements', methods=['POST'])
 def add_measurement():
-    if not authorize():
+    found_user = authorize()
+    if not found_user:
         return "Forbidden", 403
 
     body = request.get_json()
@@ -90,7 +92,7 @@ def add_measurement():
         calib_end_ts=body['calib_end_ts']
     )
     created = measurement.create(
-        user_id=body['user_id'], 
+        user_id=found_user['id'], 
         title=body['title'],
         calib_data=body['calib_data'],
         throw_data=body['throw_data'],
@@ -102,5 +104,5 @@ def add_measurement():
         angle=calculated_data['angle']
     )
     if created:
-        return jsonify(calculated_data)
+        return jsonify(created)
     return "Error creating measurement", 400

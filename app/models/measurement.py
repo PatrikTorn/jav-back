@@ -33,7 +33,7 @@ class Measurement(db.Model):
             "calib_end_ts": self.calib_end_ts,
             "velocity": self.velocity,
             "angle": self.angle,
-            "created_at": self.created_at
+            "created_at": self.created_at.isoformat()
         }
 
     def get_meta(self):
@@ -43,12 +43,12 @@ class Measurement(db.Model):
             "title": self.title,
             "velocity": self.velocity,
             "angle": self.angle,
-            "created_at": self.created_at
+            "created_at": self.created_at.isoformat()
         }
 
 
 def get():
-    measurements = Measurement.query.order_by(Measurement.created_at).all()
+    measurements = Measurement.query.order_by(Measurement.created_at.desc()).all()
     return [measurement.get_json() for measurement in measurements]
 
 
@@ -86,7 +86,7 @@ def create(
     try:
         db.session.add(meas)
         db.session.commit()
-        return meas.get_json()
+        return meas.get_meta()
     except:
         return None
 
