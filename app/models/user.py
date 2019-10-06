@@ -19,12 +19,11 @@ class User(db.Model):
         return self.id
     
     def get_json(self):
-        measurement_ids = measurement.find_ids(self.id)
         return {
             'id': self.id,
             'username': self.username,
             'created_at': self.created_at,
-            'measurement_ids': measurement_ids
+            'measurements': measurement.find_metas(self.id)
         }
 
 

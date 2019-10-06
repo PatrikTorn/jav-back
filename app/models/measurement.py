@@ -36,6 +36,16 @@ class Measurement(db.Model):
             "created_at": self.created_at
         }
 
+    def get_meta(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "title": self.title,
+            "velocity": self.velocity,
+            "angle": self.angle,
+            "created_at": self.created_at
+        }
+
 
 def get():
     measurements = Measurement.query.order_by(Measurement.created_at).all()
@@ -81,6 +91,6 @@ def create(
         return None
 
 
-def find_ids(user_id):
+def find_metas(user_id):
     measurements = Measurement.query.filter_by(user_id=user_id).all()
-    return [res.id for res in measurements]
+    return [res.get_meta() for res in measurements]

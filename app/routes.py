@@ -7,7 +7,7 @@ from app import utils
 
 @app.before_request
 def check_auth_token():
-    if request.path in ('/login', '/register', '/users'):
+    if request.path in ('/login', '/register', '/users', '/authenticate'):
         return
 
     if not request.headers.get('Authorization'):
@@ -35,6 +35,14 @@ def login():
         return jsonify(result)
     return "Wrong username or password", 400
 
+
+@app.route('/authenticate', methods=['POST'])
+def authenticate():
+    body = request.get_json()
+    result = user.find_by_token(token=body['token'])
+    if result:
+        return jsonify(result)
+    return "Wrong token", 400
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -64,7 +72,7 @@ def get_measurements():
     found_user = authorize()
     if not found_user:
         return "Forbidden", 403
-    return jsonify(measurement.find_ids(found_user['id']))
+    return jsonify(measurement.find_metas(found_user['id']))
 
 
 @app.route('/measurements', methods=['POST'])
